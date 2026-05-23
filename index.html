@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Treiize — Agence IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;0,9..40,800;1,9..40,300&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #06122b; color: #e8f0fe; overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #06122b; }
+    ::-webkit-scrollbar-thumb { background: #1565c0; border-radius: 3px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(6,18,43,0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(96,196,245,0.08);
+    }
+    .logo { display: flex; flex-direction: column; align-items: center; line-height: 1; text-decoration: none; }
+    .logo-13 {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+      background: linear-gradient(135deg, #0288d1, #60c4f5);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: 0.02em;
+    }
+    .logo-name {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem;
+      background: linear-gradient(135deg, #e8f0fe 40%, #60c4f5 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: 0.18em;
+    }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a { color: #8aaddc; text-decoration: none; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: #60c4f5; }
+
+    /* BUTTONS */
+    .btn { border: none; border-radius: 3px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; cursor: pointer; text-transform: uppercase; transition: all 0.2s; padding: 0.85rem 2.2rem; }
+    .btn-primary { background: linear-gradient(135deg, #1565c0, #0288d1); color: #fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(2,136,209,0.4); }
+    .btn-outline { background: transparent; color: #60c4f5; border: 1px solid #1565c0; }
+    .btn-outline:hover { background: rgba(21,101,192,0.15); border-color: #60c4f5; }
+    .btn-sm { padding: 0.55rem 1.3rem; font-size: 0.75rem; }
+
+    /* GRID BG */
+    .grid-bg {
+      background-image: linear-gradient(rgba(2,136,209,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(2,136,209,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* GLOW TEXT */
+    .glow-text {
+      background: linear-gradient(135deg, #e8f0fe 40%, #60c4f5 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* TAG */
+    .tag {
+      display: inline-block; background: rgba(2,136,209,0.12); border: 1px solid rgba(2,136,209,0.3);
+      color: #60c4f5; font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.35rem 0.9rem; border-radius: 2px; margin-bottom: 1.2rem;
+    }
+
+    /* ORB */
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+
+    /* CUBES */
+    .cubes-container { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .cube-wrap {
+      position: absolute; perspective: 400px;
+      animation: floatCube var(--dur) ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+    .cube { width: var(--sz); height: var(--sz); position: relative; transform-style: preserve-3d; transform: rotateX(var(--rx)) rotateY(var(--ry)); }
+    .face {
+      position: absolute; width: 100%; height: 100%;
+      border: 1px solid rgba(96,196,245,0.22);
+      background: rgba(2,136,209,0.03);
+    }
+    .front  { transform: translateZ(calc(var(--sz) / 2)); }
+    .back   { transform: rotateY(180deg) translateZ(calc(var(--sz) / 2)); }
+    .left   { transform: rotateY(-90deg) translateZ(calc(var(--sz) / 2)); }
+    .right  { transform: rotateY(90deg) translateZ(calc(var(--sz) / 2)); }
+    .top    { transform: rotateX(90deg) translateZ(calc(var(--sz) / 2)); }
+    .bottom { transform: rotateX(-90deg) translateZ(calc(var(--sz) / 2)); }
+
+    @keyframes floatCube {
+      0%, 100% { transform: translateY(0) rotateX(var(--rx)) rotateY(var(--ry)); }
+      50% { transform: translateY(-20px) rotateX(calc(var(--rx) + 180deg)) rotateY(calc(var(--ry) + 180deg)); }
+    }
+
+    /* HERO */
+    #hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 7rem 2rem 4rem; text-align: center; overflow: hidden;
+    }
+    #hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 800; line-height: 1.08; margin-bottom: 1.5rem; }
+    .hero-sub { font-size: 1.05rem; color: #7a9fcc; line-height: 1.8; max-width: 580px; margin: 0 auto 2.5rem; }
+    .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .ai-tools { margin-top: 3.5rem; display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap; }
+    .ai-tools span { color: #3a5a8a; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; border-bottom: 1px solid rgba(2,136,209,0.2); padding-bottom: 2px; }
+    .ai-label { color: #1e3a5f; font-size: 0.68rem; letter-spacing: 0.12em; margin-top: 0.5rem; text-transform: uppercase; }
+
+    /* HERO LOGO BIG */
+    .hero-logo { margin-bottom: 2rem; }
+    .hero-logo .logo-13 { font-size: 2.2rem; }
+    .hero-logo .logo-name { font-size: 2.5rem; }
+
+    /* STATS */
+    #stats {
+      background: rgba(21,101,192,0.05);
+      border-top: 1px solid rgba(96,196,245,0.08);
+      border-bottom: 1px solid rgba(96,196,245,0.08);
+      padding: 4rem 2rem;
+    }
+    .stats-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #60c4f5; line-height: 1; }
+    .stat-label { color: #e8f0fe; font-weight: 600; margin-top: 0.4rem; font-size: 0.92rem; }
+    .stat-sub { color: #3a5a8a; font-size: 0.78rem; margin-top: 0.2rem; }
+
+    /* SERVICES */
+    #services { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; position: relative; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; }
+    .service-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(96,196,245,0.1);
+      border-radius: 6px; padding: 2rem 1.8rem; transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #0288d1, transparent); opacity: 0; transition: opacity 0.3s;
+    }
+    .service-card:hover { background: rgba(2,136,209,0.07); border-color: rgba(96,196,245,0.3); transform: translateY(-5px); }
+    .service-card:hover::before { opacity: 1; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
+    .card-icon { font-size: 1.8rem; color: #0288d1; }
+    .card-num { color: #1a3a6a; font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; }
+    .card-title { font-family: 'Syne', sans-serif; font-size: 1.08rem; font-weight: 700; margin-bottom: 0.7rem; color: #cce4f7; }
+    .card-desc { color: #5a7fa8; font-size: 0.88rem; line-height: 1.7; }
+    .ai-badge {
+      display: inline-block; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid rgba(96,196,245,0.2);
+      color: #60c4f5; background: rgba(2,136,209,0.08); margin-top: 1rem;
+    }
+
+    /* APPROCHE */
+    #approche {
+      padding: 6rem 2rem; background: rgba(2,20,55,0.6);
+      border-top: 1px solid rgba(96,196,245,0.07); border-bottom: 1px solid rgba(96,196,245,0.07);
+      position: relative; overflow: hidden;
+    }
+    .approche-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; position: relative; z-index: 1; }
+    .approche-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.5rem; }
+    .approche-text { color: #7a9fcc; line-height: 1.8; margin-bottom: 1.5rem; }
+    .step-card { display: flex; gap: 1.2rem; padding: 1.2rem; background: rgba(255,255,255,0.025); border-radius: 6px; border: 1px solid rgba(96,196,245,0.08); align-items: flex-start; margin-bottom: 1rem; }
+    .step-num { font-family: 'Syne', sans-serif; color: #0288d1; font-weight: 800; font-size: 0.88rem; min-width: 28px; }
+    .step-label { font-weight: 600; font-size: 0.93rem; margin-bottom: 0.3rem; color: #cce4f7; }
+    .step-desc { color: #5a7fa8; font-size: 0.83rem; line-height: 1.6; }
+
+    /* CONTACT */
+    #contact { padding: 6rem 2rem; }
+    .contact-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+    .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
+    .contact-label { color: #3a5a8a; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .contact-value { color: #60c4f5; text-decoration: none; font-size: 0.92rem; word-break: break-all; }
+    .contact-value:hover { color: #e8f0fe; }
+    .contact-box { padding: 1.5rem; background: rgba(2,136,209,0.06); border: 1px solid rgba(96,196,245,0.1); border-radius: 8px; animation: pulseGlow 3s ease-in-out infinite; }
+    .contact-form { background: rgba(255,255,255,0.025); border: 1px solid rgba(96,196,245,0.1); border-radius: 10px; padding: 2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    input, textarea {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(96,196,245,0.15);
+      border-radius: 4px; color: #e8f0fe; padding: 0.9rem 1.1rem; font-size: 0.9rem; font-family: inherit;
+      outline: none; transition: border-color 0.2s; margin-bottom: 1rem;
+    }
+    input:focus, textarea:focus { border-color: #0288d1; }
+    input::placeholder, textarea::placeholder { color: #3a5a8a; }
+    textarea { resize: vertical; min-height: 120px; }
+    .btn-block { width: 100%; padding: 1rem; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid rgba(96,196,245,0.08); padding: 2.5rem 2rem; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.2rem; }
+    .footer-copy { color: #1e3a5f; font-size: 0.78rem; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { color: #8aaddc; text-decoration: none; font-size: 0.78rem; letter-spacing: 0.1em; transition: color 0.2s; }
+    .footer-links a:hover { color: #60c4f5; }
+
+    /* ANIMATIONS */
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(2,136,209,0.15); }
+      50% { box-shadow: 0 0 40px rgba(2,136,209,0.35); }
+    }
+    .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* SECTION TITLES */
+    .section-head { text-align: center; margin-bottom: 4rem; }
+    .section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; margin-top: 0.5rem; }
+    .section-sub { color: #7a9fcc; max-width: 500px; margin: 1rem auto 0; line-height: 1.7; }
+
+    @media (max-width: 768px) {
+      .approche-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="logo">
+    <span class="logo-13">13</span>
+    <span class="logo-name">TREIIZE</span>
+  </a>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#approche">Approche</a>
+    <a href="#stats">Réalisations</a>
+    <a href="#contact">Contact</a>
+    <button class="btn btn-primary btn-sm" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Démarrer</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="grid-bg">
+  <div class="orb" style="width:550px;height:550px;background:radial-gradient(circle,rgba(2,136,209,0.16) 0%,transparent 70%);top:5%;left:50%;transform:translateX(-50%)"></div>
+  <div id="hero-cubes" class="cubes-container"></div>
+
+  <div style="position:relative;max-width:850px;z-index:2">
+    <div class="hero-logo logo fade-up">
+      <span class="logo-13">13</span>
+      <span class="logo-name">TREIIZE</span>
+    </div>
+    <span class="tag fade-up">Agence IA nouvelle génération</span>
+    <h1 class="fade-up">
+      <span class="glow-text">L'intelligence artificielle</span><br>
+      <span style="color:#8aaddc;font-weight:300;font-style:italic;font-family:'DM Sans',sans-serif">au service de</span><br>
+      votre ambition
+    </h1>
+    <p class="hero-sub fade-up">Treiize conçoit, développe et déploie des solutions sur mesure propulsées par l'IA — pour transformer vos processus et amplifier vos résultats.</p>
+    <div class="hero-btns fade-up">
+      <button class="btn btn-primary" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">Découvrir nos services</button>
+      <button class="btn btn-outline" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Nous contacter</button>
+    </div>
+    <div class="ai-tools fade-up">
+      <span>Claude</span><span>Gemini</span><span>NotebookLM</span><span>ChatGPT</span>
+    </div>
+    <p class="ai-label fade-up">Outils maîtrisés</p>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="fade-up"><div class="stat-num" data-target="130">0+</div><div class="stat-label">Projets livrés</div><div class="stat-sub">en 2 ans</div></div>
+    <div class="fade-up"><div class="stat-num" data-target="60">0%</div><div class="stat-label">Temps économisé</div><div class="stat-sub">en moyenne</div></div>
+    <div class="fade-up"><div class="stat-num" data-target="98">0%</div><div class="stat-label">Clients satisfaits</div><div class="stat-sub">taux de rétention</div></div>
+    <div class="fade-up"><div class="stat-num" data-target="12">0</div><div class="stat-label">Pays</div><div class="stat-sub">présence internationale</div></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div id="serv-cubes" class="cubes-container" style="opacity:0.25"></div>
+  <div class="section-head fade-up" style="position:relative;z-index:1">
+    <span class="tag">Ce que nous faisons</span>
+    <h2 class="section-title">Nos <span class="glow-text">Services IA</span></h2>
+    <p class="section-sub">Chaque service s'appuie sur les meilleurs outils IA du marché, adaptés à vos besoins réels.</p>
+  </div>
+  <div class="services-grid" style="position:relative;z-index:1">
+    <div class="service-card fade-up">
+      <div class="card-top"><span class="card-icon">◈</span><span class="card-num">01</span></div>
+      <div class="card-title">Claude AI</div>
+      <p class="card-desc">Analyse, rédaction et automatisation avancée grâce aux capacités de Claude pour des résultats précis et nuancés.</p>
+      <span class="ai-badge">Claude</span>
+    </div>
+    <div class="service-card fade-up">
+      <div class="card-top"><span class="card-icon">⬡</span><span class="card-num">02</span></div>
+      <div class="card-title">Gemini</div>
+      <p class="card-desc">Multimodal et puissant — génération de contenu visuel, textuel et analytique avec l'écosystème Google.</p>
+      <span class="ai-badge">Gemini</span>
+    </div>
+    <div class="service-card fade-up">
+      <div class="card-top"><span class="card-icon">◇</span><span class="card-num">03</span></div>
+      <div class="card-title">Notebook LM</div>
+      <p class="card-desc">Synthèse et exploration de documents complexes pour extraire l'essentiel et produire des insights actionnables.</p>
+      <span class="ai-badge">NotebookLM</span>
+    </div>
+    <div class="service-card fade-up">
+      <div class="card-top"><span class="card-icon">⬟</span><span class="card-num">04</span></div>
+      <div class="card-title">ChatGPT</div>
+      <p class="card-desc">Création de contenu, chatbots et automatisation avec le modèle le plus polyvalent du marché.</p>
+      <span class="ai-badge">ChatGPT</span>
+    </div>
+    <div class="service-card fade-up">
+      <div class="card-top"><span class="card-icon">◉</span><span class="card-num">05</span></div>
+      <div class="card-title">Design IA</div>
+      <p class="card-desc">Identités visuelles, maquettes et créations graphiques générées et affinées par intelligence artificielle.</p>
+      <span class="ai-badge">Design</span>
+    </div>
+    <div class="service-card fade-up">
+      <div class="card-top"><span class="card-icon">◎</span><span class="card-num">06</span></div>
+      <div class="card-title">Stratégie & Formation</div>
+      <p class="card-desc">Audit, feuille de route IA et montée en compétences de vos équipes pour intégrer l'IA durablement.</p>
+      <span class="ai-badge">Strategy</span>
+    </div>
+  </div>
+</section>
+
+<!-- APPROCHE -->
+<section id="approche">
+  <div id="approche-cubes" class="cubes-container" style="opacity:0.18"></div>
+  <div class="approche-grid">
+    <div class="fade-up">
+      <span class="tag">Notre méthode</span>
+      <h2 class="approche-title">Une approche <span class="glow-text">humaine</span>,<br>augmentée par l'IA</h2>
+      <p class="approche-text">Nous ne remplaçons pas l'humain — nous l'amplifions. Chaque projet démarre par une immersion dans vos enjeux, puis l'IA accélère l'exécution pour livrer plus vite, mieux.</p>
+      <p style="color:#5a7fa8;line-height:1.8">Claude, Gemini, NotebookLM, ChatGPT — nous maîtrisons chaque outil pour l'appliquer là où il crée le plus de valeur pour vous.</p>
+      <button class="btn btn-primary" style="margin-top:2rem" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Parlons de votre projet</button>
+    </div>
+    <div class="fade-up">
+      <div class="step-card"><span class="step-num">01</span><div><div class="step-label">Audit & Découverte</div><div class="step-desc">On comprend votre business, vos besoins et vos contraintes.</div></div></div>
+      <div class="step-card"><span class="step-num">02</span><div><div class="step-label">Design de Solution</div><div class="step-desc">On conçoit une architecture IA adaptée à vos objectifs.</div></div></div>
+      <div class="step-card"><span class="step-num">03</span><div><div class="step-label">Développement Agile</div><div class="step-desc">On itère rapidement avec des livrables concrets à chaque sprint.</div></div></div>
+      <div class="step-card"><span class="step-num">04</span><div><div class="step-label">Déploiement & Suivi</div><div class="step-desc">On déploie, mesure et optimise en continu pour maximiser l'impact.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div style="max-width:700px;margin:0 auto;text-align:center;margin-bottom:4rem" class="fade-up">
+    <span class="tag">Prêt à commencer ?</span>
+    <h2 class="section-title">Travaillons <span class="glow-text">ensemble</span></h2>
+    <p style="color:#7a9fcc;line-height:1.7;margin-top:1rem">Un projet, une idée, une question ? Nous répondons sous 24h.</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info fade-up">
+      <div><div class="contact-label">Email</div><a href="mailto:fallouassanekonate13@gmail.com" class="contact-value">fallouassanekonate13@gmail.com</a></div>
+      <div><div class="contact-label">Téléphone</div><a href="tel:+2250505427087" class="contact-value">+225 05 05 42 70 87</a></div>
+      <div><div class="contact-label">Instagram</div><a href="https://instagram.com/tr311ze" target="_blank" class="contact-value">@tr311ze</a></div>
+      <div class="contact-box">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:#cce4f7;margin-bottom:0.5rem">Réponse garantie</div>
+        <div style="color:#5a7fa8;font-size:0.85rem;line-height:1.6">Sous 24h ouvrées pour tout projet ou demande d'information.</div>
+      </div>
+    </div>
+    <div class="contact-form fade-up">
+      <div class="form-row">
+        <input type="text" placeholder="Prénom">
+        <input type="text" placeholder="Nom">
+      </div>
+      <input type="email" placeholder="Email">
+      <input type="text" placeholder="Entreprise">
+      <textarea placeholder="Décrivez votre projet..."></textarea>
+      <button class="btn btn-primary btn-block">Envoyer →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <a href="#" class="logo">
+      <span class="logo-13" style="font-size:0.9rem">13</span>
+      <span class="logo-name" style="font-size:0.95rem">TREIIZE</span>
+    </a>
+    <span class="footer-copy">© 2026 Treiize. Tous droits réservés.</span>
+    <div class="footer-links">
+      <a href="https://instagram.com/tr311ze" target="_blank">@tr311ze</a>
+      <a href="mailto:fallouassanekonate13@gmail.com">Email</a>
+      <a href="tel:+2250505427087">+225 05 05 42 70 87</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Navbar scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// Cubes generator
+function makeCubes(containerId, count) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const configs = [
+    {size:38,x:8,y:12,delay:0,dur:7,rx:25,ry:45},
+    {size:22,x:88,y:8,delay:1.2,dur:9,rx:55,ry:20},
+    {size:50,x:75,y:60,delay:0.5,dur:11,rx:15,ry:70},
+    {size:18,x:5,y:70,delay:2,dur:8,rx:40,ry:30},
+    {size:30,x:92,y:40,delay:0.8,dur:10,rx:60,ry:50},
+    {size:14,x:50,y:5,delay:3,dur:6,rx:30,ry:80},
+    {size:42,x:20,y:85,delay:1.5,dur:12,rx:20,ry:60},
+    {size:26,x:65,y:90,delay:2.5,dur:9,rx:70,ry:40},
+  ];
+  configs.slice(0, count || configs.length).forEach(c => {
+    const wrap = document.createElement('div');
+    wrap.className = 'cube-wrap';
+    wrap.style.cssText = `left:${c.x}%;top:${c.y}%;--sz:${c.size}px;--rx:${c.rx}deg;--ry:${c.ry}deg;--dur:${c.dur}s;--delay:${c.delay}s;opacity:0.55`;
+    const cube = document.createElement('div');
+    cube.className = 'cube';
+    cube.style.cssText = `--sz:${c.size}px;--rx:${c.rx}deg;--ry:${c.ry}deg`;
+    ['front','back','left','right','top','bottom'].forEach(f => {
+      const face = document.createElement('div');
+      face.className = `face ${f}`;
+      face.style.cssText = `--sz:${c.size}px`;
+      cube.appendChild(face);
+    });
+    wrap.appendChild(cube);
+    container.appendChild(wrap);
+  });
+}
+makeCubes('hero-cubes');
+makeCubes('serv-cubes');
+makeCubes('approche-cubes');
+
+// Fade-up on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// Animated counters
+const suffixes = { 130: '+', 60: '%', 98: '%', 12: '' };
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = parseInt(el.dataset.target);
+    const suffix = suffixes[target] || '';
+    let count = 0;
+    const step = Math.ceil(target / 60);
+    const timer = setInterval(() => {
+      count += step;
+      if (count >= target) { count = target; clearInterval(timer); }
+      el.textContent = count + suffix;
+    }, 20);
+    counterObserver.unobserve(el);
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.stat-num[data-target]').forEach(el => counterObserver.observe(el));
+</script>
+</body>
+</html>
